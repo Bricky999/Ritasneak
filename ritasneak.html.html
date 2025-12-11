@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Video after Boxes</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      height: 100vh;
+    }
+    .box {
+      width: 50%;
+      height: 50%;
+      transition: opacity 1s;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box" data-sound="Camera1.m4a" style="background:red;"></div>
+<div class="box" data-sound="Camera2.m4a" style="background:green;"></div>
+<div class="box" data-sound="Camera3.m4a" style="background:blue;"></div>
+<div class="box" data-sound="Eject tape2.m4a" style="background:orange;"></div>
+
+<script>
+// Hangok előtöltése
+const sounds = {};
+const boxes = document.querySelectorAll('.box');
+let hiddenCount = 0;
+
+boxes.forEach(box => {
+  const file = box.dataset.sound;
+  sounds[file] = new Audio(file);
+  sounds[file].preload = "auto";
+
+  // Egér fölé menéskor
+  box.addEventListener("mouseenter", () => {
+    box.style.background = "#" + Math.floor(Math.random() * 16777215).toString(16);
+    const sound = sounds[file];
+    sound.pause();
+    sound.currentTime = 0;
+    sound.play();
+  });
+
+  // Kattintás számolása
+  let clickCount = 0;
+  box.addEventListener("click", () => {
+    clickCount++;
+    if (clickCount === 2) {
+      box.style.opacity = 0;
+      setTimeout(() => {
+        box.style.display = "none";
+        hiddenCount++;
+
+        // Ha minden doboz eltűnt
+        if (hiddenCount === boxes.length) {
+          // 25 másodperces várakozás
+          setTimeout(showVideo, 10000);
+        }
+      }, 1000);
+    }
+  });
+});
+
+// Funkció a videó megjelenítésére
+function showVideo() {
+  const video = document.createElement("video");
+  video.src = "myVideo.mp4"; // ide írd a videó fájl nevét és útvonalát
+  video.style.position = "fixed";
+  video.style.top = 0;
+  video.style.left = 0;
+  video.style.width = "100vw";
+  video.style.height = "100vh";
+  video.style.objectFit = "cover";
+  video.autoplay = true;
+  video.loop = true;
+  video.muted = true; // automatikus lejátszás miatt
+  video.controls = true; // ha szeretnél vezérlőt
+  document.body.appendChild(video);
+}
+</script>
+
+</body>
+</html>
